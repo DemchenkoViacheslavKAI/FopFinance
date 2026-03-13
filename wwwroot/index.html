@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ФОП Фінанси</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ---- Базові змінні та стилі ---- */
+    :root {
+      --accent: #16a34a;        /* насичений зелений — символ прибутку */
+      --accent-light: #bbf7d0;
+      --danger: #dc2626;
+      --warn: #d97706;
+      --bg: #0f172a;            /* глибокий темно-синій фон */
+      --surface: #1e293b;
+      --surface2: #273448;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+
+    * { font-family: 'Manrope', sans-serif; }
+    body { background: var(--bg); color: var(--text); }
+
+    /* Заголовки — фірмовий шрифт */
+    h1, h2, h3, .font-brand { font-family: 'Unbounded', sans-serif; }
+
+    /* Кастомний скролбар */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Картки */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    /* Кнопки */
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      padding: .5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .875rem;
+      transition: opacity .15s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      padding: .4rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .8rem;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s;
+    }
+    .btn-danger:hover { opacity: .85; }
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text);
+      padding: .4rem 1rem;
+      border-radius: 8px;
+      font-size: .8rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: background .15s;
+    }
+    .btn-ghost:hover { background: var(--border); }
+
+    /* Inputs */
+    input, select, textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: .5rem .75rem;
+      width: 100%;
+      font-size: .875rem;
+      outline: none;
+      transition: border-color .15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+    label { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; display: block; }
+
+    /* Таби навігації */
+    .nav-tab {
+      padding: .5rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: .8rem;
+      color: var(--muted);
+      transition: all .15s;
+      border: none;
+      background: transparent;
+    }
+    .nav-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+    .nav-tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+    /* Значки-бейджі */
+    .badge-income  { background: #14532d; color: #86efac; border-radius: 6px; padding: .15rem .5rem; font-size: .75rem; }
+    .badge-expense { background: #450a0a; color: #fca5a5; border-radius: 6px; padding: .15rem .5rem; font-size: .75rem; }
+
+    /* Рядок таблиці */
+    .row-hover:hover { background: var(--surface2); }
+
+    /* Анімація появи */
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .fade-in { animation: fadeIn .25s ease both; }
+
+    /* Модальне вікно */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .modal { width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+
+    /* Сумарні плашки */
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<!-- ===== ШАПКА ===== -->
+<header style="background:var(--surface); border-bottom:1px solid var(--border);"
+        class="px-6 py-3 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <div style="background:var(--accent);" class="w-8 h-8 rounded-lg flex items-center justify-center font-brand font-bold text-white text-sm">₴</div>
+    <span class="font-brand font-semibold text-sm" style="color:var(--text);">ФОП Фінанси</span>
+  </div>
+  <div id="entrepreneurLabel" class="text-xs" style="color:var(--muted);"></div>
+  <div class="flex gap-2">
+    <button class="btn-ghost text-xs" onclick="saveData('json')">💾 Зберегти JSON</button>
+    <button class="btn-ghost text-xs" onclick="saveData('xml')">💾 Зберегти XML</button>
+    <button class="btn-ghost text-xs" onclick="loadData()">📂 Відкрити</button>
+    <button class="btn-ghost text-xs" onclick="openTab('profile')">⚙️ Профіль</button>
+  </div>
+</header>
+
+<!-- ===== НАВІГАЦІЯ ===== -->
+<nav class="px-6 pt-4 pb-0 flex gap-2">
+  <button class="nav-tab active" id="tab-dashboard" onclick="openTab('dashboard')">Дашборд</button>
+  <button class="nav-tab" id="tab-incomes"   onclick="openTab('incomes')">Доходи</button>
+  <button class="nav-tab" id="tab-expenses"  onclick="openTab('expenses')">Витрати</button>
+  <button class="nav-tab" id="tab-categories" onclick="openTab('categories')">Категорії</button>
+  <button class="nav-tab" id="tab-reports"   onclick="openTab('reports')">Звіти</button>
+</nav>
+
+<!-- ===== ОСНОВНИЙ КОНТЕНТ ===== -->
+<main class="flex-1 p-6 overflow-auto">
+
+  <!-- --- ДАШБОРД --- -->
+  <section id="page-dashboard" class="fade-in">
+    <h2 class="font-brand text-lg font-semibold mb-4">Огляд</h2>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="stat-card">
+        <div class="text-xs mb-1" style="color:var(--muted);">Доходи (всього)</div>
+        <div id="stat-income" class="text-2xl font-bold" style="color:#86efac;">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-xs mb-1" style="color:var(--muted);">Витрати (всього)</div>
+        <div id="stat-expense" class="text-2xl font-bold" style="color:#fca5a5;">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-xs mb-1" style="color:var(--muted);">Чистий прибуток</div>
+        <div id="stat-profit" class="text-2xl font-bold">—</div>
+      </div>
+    </div>
+    <!-- Останні операції -->
+    <h3 class="font-brand text-sm font-semibold mb-3" style="color:var(--muted);">ОСТАННІ ОПЕРАЦІЇ</h3>
+    <div id="recentList" class="card p-0 overflow-hidden">
+      <p class="text-xs text-center py-8" style="color:var(--muted);">Немає записів</p>
+    </div>
+  </section>
+
+  <!-- --- ДОХОДИ --- -->
+  <section id="page-incomes" class="fade-in hidden">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-brand text-lg font-semibold">Доходи</h2>
+      <button class="btn-primary" onclick="openIncomeModal()">+ Додати дохід</button>
+    </div>
+    <div class="card p-0 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border); color:var(--muted);" class="text-left text-xs">
+            <th class="px-4 py-3">Дата</th>
+            <th class="px-4 py-3">Джерело</th>
+            <th class="px-4 py-3">Опис</th>
+            <th class="px-4 py-3 text-right">Сума</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody id="incomesBody">
+          <tr><td colspan="5" class="text-center py-8 text-xs" style="color:var(--muted);">Немає записів</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- --- ВИТРАТИ --- -->
+  <section id="page-expenses" class="fade-in hidden">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-brand text-lg font-semibold">Витрати</h2>
+      <button class="btn-primary" onclick="openExpenseModal()">+ Додати витрату</button>
+    </div>
+    <div class="card p-0 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border); color:var(--muted);" class="text-left text-xs">
+            <th class="px-4 py-3">Дата</th>
+            <th class="px-4 py-3">Категорія</th>
+            <th class="px-4 py-3">Опис</th>
+            <th class="px-4 py-3 text-right">Сума</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody id="expensesBody">
+          <tr><td colspan="5" class="text-center py-8 text-xs" style="color:var(--muted);">Немає записів</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- --- КАТЕГОРІЇ --- -->
+  <section id="page-categories" class="fade-in hidden">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-brand text-lg font-semibold">Категорії витрат</h2>
+      <button class="btn-primary" onclick="openCategoryModal()">+ Додати категорію</button>
+    </div>
+    <div id="categoriesGrid" class="grid grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- --- ЗВІТИ --- -->
+  <section id="page-reports" class="fade-in hidden">
+    <h2 class="font-brand text-lg font-semibold mb-4">Звіт за період</h2>
+    <div class="card p-5 mb-5" style="max-width:460px;">
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label>Від</label>
+          <input type="date" id="reportStart" />
+        </div>
+        <div>
+          <label>До</label>
+          <input type="date" id="reportEnd" />
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn-primary flex-1" onclick="generateReport()">Сформувати</button>
+        <button class="btn-ghost" onclick="exportReport('json')">↓ JSON</button>
+        <button class="btn-ghost" onclick="exportReport('xml')">↓ XML</button>
+      </div>
+    </div>
+    <div id="reportResult" class="hidden fade-in">
+      <div class="grid grid-cols-3 gap-4 mb-5">
+        <div class="stat-card">
+          <div class="text-xs mb-1" style="color:var(--muted);">Доходи</div>
+          <div id="rep-income" class="text-xl font-bold" style="color:#86efac;">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-xs mb-1" style="color:var(--muted);">Витрати</div>
+          <div id="rep-expense" class="text-xl font-bold" style="color:#fca5a5;">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-xs mb-1" style="color:var(--muted);">Прибуток</div>
+          <div id="rep-profit" class="text-xl font-bold">—</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <h3 class="font-brand text-xs font-semibold mb-2" style="color:var(--muted);">ДОХОДИ</h3>
+          <div class="card p-0 overflow-hidden">
+            <table class="w-full text-xs">
+              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);" class="text-left">
+                <th class="px-3 py-2">Дата</th><th class="px-3 py-2">Джерело</th><th class="px-3 py-2 text-right">Сума</th>
+              </tr></thead>
+              <tbody id="rep-incomes-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3 class="font-brand text-xs font-semibold mb-2" style="color:var(--muted);">ВИТРАТИ</h3>
+          <div class="card p-0 overflow-hidden">
+            <table class="w-full text-xs">
+              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);" class="text-left">
+                <th class="px-3 py-2">Дата</th><th class="px-3 py-2">Категорія</th><th class="px-3 py-2 text-right">Сума</th>
+              </tr></thead>
+              <tbody id="rep-expenses-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --- ПРОФІЛЬ --- -->
+  <section id="page-profile" class="fade-in hidden" style="max-width:480px;">
+    <h2 class="font-brand text-lg font-semibold mb-4">Профіль ФОП</h2>
+    <div class="card p-5 flex flex-col gap-4">
+      <div>
+        <label>ПІБ</label>
+        <input type="text" id="prof-fullName" placeholder="Іванов Іван Іванович" />
+      </div>
+      <div>
+        <label>Група ЄП</label>
+        <select id="prof-taxGroup">
+          <option value="1">1 група</option>
+          <option value="2">2 група</option>
+          <option value="3" selected>3 група</option>
+        </select>
+      </div>
+      <div>
+        <label>РНОКПП (ІПН)</label>
+        <input type="text" id="prof-regNumber" placeholder="1234567890" />
+      </div>
+      <button class="btn-primary" onclick="saveProfile()">Зберегти профіль</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== МОДАЛІ ===== -->
+
+<!-- Дохід -->
+<div id="incomeModal" class="modal-backdrop hidden">
+  <div class="modal card p-6 fade-in">
+    <h3 class="font-brand text-base font-semibold mb-4" id="incomeModalTitle">Новий дохід</h3>
+    <input type="hidden" id="income-id" />
+    <div class="flex flex-col gap-3">
+      <div><label>Дата *</label><input type="date" id="income-date" /></div>
+      <div><label>Джерело *</label><input type="text" id="income-source" placeholder="Назва клієнта або контракту" /></div>
+      <div><label>Сума (грн) *</label><input type="number" id="income-amount" min="0.01" step="0.01" /></div>
+      <div><label>Опис</label><input type="text" id="income-desc" placeholder="Необов'язково" /></div>
+      <div id="income-error" class="text-xs hidden" style="color:var(--danger);"></div>
+      <div class="flex gap-2 pt-2">
+        <button class="btn-primary flex-1" onclick="submitIncome()">Зберегти</button>
+        <button class="btn-ghost" onclick="closeModal('incomeModal')">Скасувати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Витрата -->
+<div id="expenseModal" class="modal-backdrop hidden">
+  <div class="modal card p-6 fade-in">
+    <h3 class="font-brand text-base font-semibold mb-4" id="expenseModalTitle">Нова витрата</h3>
+    <input type="hidden" id="expense-id" />
+    <div class="flex flex-col gap-3">
+      <div><label>Дата *</label><input type="date" id="expense-date" /></div>
+      <div>
+        <label>Категорія *</label>
+        <select id="expense-category"></select>
+      </div>
+      <div><label>Сума (грн) *</label><input type="number" id="expense-amount" min="0.01" step="0.01" /></div>
+      <div><label>Опис</label><input type="text" id="expense-desc" /></div>
+      <div id="expense-error" class="text-xs hidden" style="color:var(--danger);"></div>
+      <div class="flex gap-2 pt-2">
+        <button class="btn-primary flex-1" onclick="submitExpense()">Зберегти</button>
+        <button class="btn-ghost" onclick="closeModal('expenseModal')">Скасувати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Категорія -->
+<div id="categoryModal" class="modal-backdrop hidden">
+  <div class="modal card p-6 fade-in" style="width:380px;">
+    <h3 class="font-brand text-base font-semibold mb-4" id="categoryModalTitle">Нова категорія</h3>
+    <input type="hidden" id="cat-id" />
+    <div class="flex flex-col gap-3">
+      <div><label>Назва *</label><input type="text" id="cat-name" /></div>
+      <div><label>Опис</label><input type="text" id="cat-desc" /></div>
+      <div id="cat-error" class="text-xs hidden" style="color:var(--danger);"></div>
+      <div class="flex gap-2 pt-2">
+        <button class="btn-primary flex-1" onclick="submitCategory()">Зберегти</button>
+        <button class="btn-ghost" onclick="closeModal('categoryModal')">Скасувати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast-повідомлення -->
+<div id="toast" class="fixed bottom-5 right-5 px-4 py-3 rounded-xl text-sm font-medium opacity-0 transition-opacity duration-300 pointer-events-none z-50"
+     style="background:var(--surface); border:1px solid var(--border);"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

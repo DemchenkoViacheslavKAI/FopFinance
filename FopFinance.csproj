@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Windows-only WinForms проект -->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>FopFinance</AssemblyName>
+    <RootNamespace>FopFinance</RootNamespace>
+    <!-- Іконка (необов'язково, якщо є) -->
+    <!-- <ApplicationIcon>Resources\app.ico</ApplicationIcon> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WebView2 — вбудований браузер Chromium для WinForms -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2365.46" />
+  </ItemGroup>
+
+  <!-- Копіюємо wwwroot у вихідну папку при збірці -->
+  <ItemGroup>
+    <Content Include="wwwroot\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
