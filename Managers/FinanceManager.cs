@@ -16,9 +16,31 @@ namespace FopFinance.Managers
         public List<Income>   Incomes    { get; private set; } = new();
         public List<Expense>  Expenses   { get; private set; } = new();
         public List<Category> Categories { get; private set; } = new();
+        public List<Profile> Profiles { get; private set; } = new();
+        public string ActiveProfileId { get; private set; } = string.Empty;
 
         /// <summary>Дані підприємця (профіль ФОП).</summary>
         public Entrepreneur Entrepreneur { get; set; } = new();
+
+        public void SetProfiles(List<Profile> profiles, string activeProfileId)
+        {
+            Profiles = profiles ?? new List<Profile>();
+            ActiveProfileId = activeProfileId ?? string.Empty;
+        }
+
+        public void AddProfile(Profile profile)
+        {
+            Profiles.Add(profile);
+            if (string.IsNullOrEmpty(ActiveProfileId)) ActiveProfileId = profile.Id;
+        }
+
+        public bool SwitchProfile(string profileId)
+        {
+            bool exists = Profiles.Any(p => p.Id == profileId);
+            if (!exists) return false;
+            ActiveProfileId = profileId;
+            return true;
+        }
 
         // ===================== ДОХОДИ =====================
 
@@ -53,6 +75,12 @@ namespace FopFinance.Managers
             string error = expense.Validate();
             if (!string.IsNullOrEmpty(error)) return error;
 
+            var category = Categories.FirstOrDefault(c => c.Id == expense.CategoryId);
+            if (category == null)
+                return "Вибрана категорія не існує.";
+
+            expense.CategoryName = category.Name;
+
             Expenses.Add(expense);
             return string.Empty;
         }
@@ -62,6 +90,12 @@ namespace FopFinance.Managers
         {
             string error = updated.Validate();
             if (!string.IsNullOrEmpty(error)) return error;
+
+            var category = Categories.FirstOrDefault(c => c.Id == updated.CategoryId);
+            if (category == null)
+                return "Вибрана категорія не існує.";
+
+            updated.CategoryName = category.Name;
 
             int idx = Expenses.FindIndex(e => e.Id == updated.Id);
             if (idx < 0) return "Запис не знайдено.";

@@ -4,407 +4,621 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ФОП Фінанси</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    /* ---- Базові змінні та стилі ---- */
-    :root {
-      --accent: #16a34a;        /* насичений зелений — символ прибутку */
-      --accent-light: #bbf7d0;
-      --danger: #dc2626;
-      --warn: #d97706;
-      --bg: #0f172a;            /* глибокий темно-синій фон */
-      --surface: #1e293b;
-      --surface2: #273448;
-      --border: #334155;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-    }
-
-    * { font-family: 'Manrope', sans-serif; }
-    body { background: var(--bg); color: var(--text); }
-
-    /* Заголовки — фірмовий шрифт */
-    h1, h2, h3, .font-brand { font-family: 'Unbounded', sans-serif; }
-
-    /* Кастомний скролбар */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--surface); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    /* Картки */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    /* Кнопки */
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      padding: .5rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: .875rem;
-      transition: opacity .15s;
-      cursor: pointer;
-      border: none;
-    }
-    .btn-primary:hover { opacity: .85; }
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-      padding: .4rem 1rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: .8rem;
-      cursor: pointer;
-      border: none;
-      transition: opacity .15s;
-    }
-    .btn-danger:hover { opacity: .85; }
-    .btn-ghost {
-      background: var(--surface2);
-      color: var(--text);
-      padding: .4rem 1rem;
-      border-radius: 8px;
-      font-size: .8rem;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      transition: background .15s;
-    }
-    .btn-ghost:hover { background: var(--border); }
-
-    /* Inputs */
-    input, select, textarea {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: .5rem .75rem;
-      width: 100%;
-      font-size: .875rem;
-      outline: none;
-      transition: border-color .15s;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-    }
-    label { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; display: block; }
-
-    /* Таби навігації */
-    .nav-tab {
-      padding: .5rem 1.25rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: .8rem;
-      color: var(--muted);
-      transition: all .15s;
-      border: none;
-      background: transparent;
-    }
-    .nav-tab.active {
-      background: var(--accent);
-      color: white;
-    }
-    .nav-tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
-
-    /* Значки-бейджі */
-    .badge-income  { background: #14532d; color: #86efac; border-radius: 6px; padding: .15rem .5rem; font-size: .75rem; }
-    .badge-expense { background: #450a0a; color: #fca5a5; border-radius: 6px; padding: .15rem .5rem; font-size: .75rem; }
-
-    /* Рядок таблиці */
-    .row-hover:hover { background: var(--surface2); }
-
-    /* Анімація появи */
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-    .fade-in { animation: fadeIn .25s ease both; }
-
-    /* Модальне вікно */
-    .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.6);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 1000;
-    }
-    .modal { width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
-
-    /* Сумарні плашки */
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-    }
-  </style>
+  <!-- Змінити тему: theme-green.css  або  theme-orange.css -->
+  <link rel="stylesheet" href="css/theme-green.css" />
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-<!-- ===== ШАПКА ===== -->
-<header style="background:var(--surface); border-bottom:1px solid var(--border);"
-        class="px-6 py-3 flex items-center justify-between">
-  <div class="flex items-center gap-3">
-    <div style="background:var(--accent);" class="w-8 h-8 rounded-lg flex items-center justify-center font-brand font-bold text-white text-sm">₴</div>
-    <span class="font-brand font-semibold text-sm" style="color:var(--text);">ФОП Фінанси</span>
-  </div>
-  <div id="entrepreneurLabel" class="text-xs" style="color:var(--muted);"></div>
-  <div class="flex gap-2">
-    <button class="btn-ghost text-xs" onclick="saveData('json')">💾 Зберегти JSON</button>
-    <button class="btn-ghost text-xs" onclick="saveData('xml')">💾 Зберегти XML</button>
-    <button class="btn-ghost text-xs" onclick="loadData()">📂 Відкрити</button>
-    <button class="btn-ghost text-xs" onclick="openTab('profile')">⚙️ Профіль</button>
-  </div>
-</header>
-
-<!-- ===== НАВІГАЦІЯ ===== -->
-<nav class="px-6 pt-4 pb-0 flex gap-2">
-  <button class="nav-tab active" id="tab-dashboard" onclick="openTab('dashboard')">Дашборд</button>
-  <button class="nav-tab" id="tab-incomes"   onclick="openTab('incomes')">Доходи</button>
-  <button class="nav-tab" id="tab-expenses"  onclick="openTab('expenses')">Витрати</button>
-  <button class="nav-tab" id="tab-categories" onclick="openTab('categories')">Категорії</button>
-  <button class="nav-tab" id="tab-reports"   onclick="openTab('reports')">Звіти</button>
-</nav>
-
-<!-- ===== ОСНОВНИЙ КОНТЕНТ ===== -->
-<main class="flex-1 p-6 overflow-auto">
-
-  <!-- --- ДАШБОРД --- -->
-  <section id="page-dashboard" class="fade-in">
-    <h2 class="font-brand text-lg font-semibold mb-4">Огляд</h2>
-    <div class="grid grid-cols-3 gap-4 mb-6">
-      <div class="stat-card">
-        <div class="text-xs mb-1" style="color:var(--muted);">Доходи (всього)</div>
-        <div id="stat-income" class="text-2xl font-bold" style="color:#86efac;">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="text-xs mb-1" style="color:var(--muted);">Витрати (всього)</div>
-        <div id="stat-expense" class="text-2xl font-bold" style="color:#fca5a5;">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="text-xs mb-1" style="color:var(--muted);">Чистий прибуток</div>
-        <div id="stat-profit" class="text-2xl font-bold">—</div>
+<div class="app-shell">
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar">
+    <div class="brand-block">
+      <div class="brand-mark">₴</div>
+      <div class="brand-text">
+        <div class="name">ФОП Фінанси</div>
+        <small>Офлайн-облік та аналітика</small>
       </div>
     </div>
-    <!-- Останні операції -->
-    <h3 class="font-brand text-sm font-semibold mb-3" style="color:var(--muted);">ОСТАННІ ОПЕРАЦІЇ</h3>
-    <div id="recentList" class="card p-0 overflow-hidden">
-      <p class="text-xs text-center py-8" style="color:var(--muted);">Немає записів</p>
-    </div>
-  </section>
 
-  <!-- --- ДОХОДИ --- -->
-  <section id="page-incomes" class="fade-in hidden">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="font-brand text-lg font-semibold">Доходи</h2>
-      <button class="btn-primary" onclick="openIncomeModal()">+ Додати дохід</button>
-    </div>
-    <div class="card p-0 overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border); color:var(--muted);" class="text-left text-xs">
-            <th class="px-4 py-3">Дата</th>
-            <th class="px-4 py-3">Джерело</th>
-            <th class="px-4 py-3">Опис</th>
-            <th class="px-4 py-3 text-right">Сума</th>
-            <th class="px-4 py-3"></th>
-          </tr>
-        </thead>
-        <tbody id="incomesBody">
-          <tr><td colspan="5" class="text-center py-8 text-xs" style="color:var(--muted);">Немає записів</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+    <div class="nav-section-label">Навігація</div>
+    <nav class="nav-list">
+      <button class="nav-tab active" id="tab-dashboard" onclick="openTab('dashboard')">
+        <span class="nav-icon">📊</span> Огляд
+      </button>
+      <button class="nav-tab" id="tab-incomes" onclick="openTab('incomes')">
+        <span class="nav-icon">📥</span> Доходи
+      </button>
+      <button class="nav-tab" id="tab-expenses" onclick="openTab('expenses')">
+        <span class="nav-icon">📤</span> Витрати
+      </button>
+      <button class="nav-tab" id="tab-categories" onclick="openTab('categories')">
+        <span class="nav-icon">🏷️</span> Категорії
+      </button>
+      <button class="nav-tab" id="tab-reports" onclick="openTab('reports')">
+        <span class="nav-icon">📋</span> Звіти
+      </button>
+      <button class="nav-tab" id="tab-profile" onclick="openTab('profile')">
+        <span class="nav-icon">👤</span> Профіль ФОП
+      </button>
+    </nav>
 
-  <!-- --- ВИТРАТИ --- -->
-  <section id="page-expenses" class="fade-in hidden">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="font-brand text-lg font-semibold">Витрати</h2>
-      <button class="btn-primary" onclick="openExpenseModal()">+ Додати витрату</button>
+    <div class="nav-section-label" style="margin-top:0.5rem;">Швидкі дії</div>
+    <div class="side-actions">
+      <button class="btn-ghost" style="font-size:0.78rem;" onclick="saveData('json')">⬇ Зберегти JSON</button>
+      <button class="btn-ghost" style="font-size:0.78rem;" onclick="saveData('xml')">⬇ Зберегти XML</button>
+      <button class="btn-ghost" style="font-size:0.78rem;" onclick="loadData()">⬆ Завантажити дані</button>
     </div>
-    <div class="card p-0 overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border); color:var(--muted);" class="text-left text-xs">
-            <th class="px-4 py-3">Дата</th>
-            <th class="px-4 py-3">Категорія</th>
-            <th class="px-4 py-3">Опис</th>
-            <th class="px-4 py-3 text-right">Сума</th>
-            <th class="px-4 py-3"></th>
-          </tr>
-        </thead>
-        <tbody id="expensesBody">
-          <tr><td colspan="5" class="text-center py-8 text-xs" style="color:var(--muted);">Немає записів</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
 
-  <!-- --- КАТЕГОРІЇ --- -->
-  <section id="page-categories" class="fade-in hidden">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="font-brand text-lg font-semibold">Категорії витрат</h2>
-      <button class="btn-primary" onclick="openCategoryModal()">+ Додати категорію</button>
+    <div class="side-tip">
+      💡 Вносьте доходи та витрати регулярно — тоді автоматичні звіти будуть точними і корисними.
     </div>
-    <div id="categoriesGrid" class="grid grid-cols-3 gap-3"></div>
-  </section>
+  </aside>
 
-  <!-- --- ЗВІТИ --- -->
-  <section id="page-reports" class="fade-in hidden">
-    <h2 class="font-brand text-lg font-semibold mb-4">Звіт за період</h2>
-    <div class="card p-5 mb-5" style="max-width:460px;">
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label>Від</label>
-          <input type="date" id="reportStart" />
-        </div>
-        <div>
-          <label>До</label>
-          <input type="date" id="reportEnd" />
-        </div>
+  <!-- ══════════════ CONTENT ══════════════ -->
+  <div class="content-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title" id="pageTitleLabel">Огляд</div>
+        <div id="entrepreneurLabel"></div>
       </div>
-      <div class="flex gap-2">
-        <button class="btn-primary flex-1" onclick="generateReport()">Сформувати</button>
-        <button class="btn-ghost" onclick="exportReport('json')">↓ JSON</button>
-        <button class="btn-ghost" onclick="exportReport('xml')">↓ XML</button>
+      <div class="topbar-controls">
+        <select id="profileSelect" style="min-width:200px;" title="Активний профіль" onchange="switchProfile(this.value)"></select>
+        <button class="btn-primary" onclick="openProfileModal()">+ Профіль</button>
       </div>
-    </div>
-    <div id="reportResult" class="hidden fade-in">
-      <div class="grid grid-cols-3 gap-4 mb-5">
-        <div class="stat-card">
-          <div class="text-xs mb-1" style="color:var(--muted);">Доходи</div>
-          <div id="rep-income" class="text-xl font-bold" style="color:#86efac;">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="text-xs mb-1" style="color:var(--muted);">Витрати</div>
-          <div id="rep-expense" class="text-xl font-bold" style="color:#fca5a5;">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="text-xs mb-1" style="color:var(--muted);">Прибуток</div>
-          <div id="rep-profit" class="text-xl font-bold">—</div>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <h3 class="font-brand text-xs font-semibold mb-2" style="color:var(--muted);">ДОХОДИ</h3>
-          <div class="card p-0 overflow-hidden">
-            <table class="w-full text-xs">
-              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);" class="text-left">
-                <th class="px-3 py-2">Дата</th><th class="px-3 py-2">Джерело</th><th class="px-3 py-2 text-right">Сума</th>
-              </tr></thead>
-              <tbody id="rep-incomes-body"></tbody>
-            </table>
+    </header>
+
+    <main class="workspace">
+
+      <!-- ── DASHBOARD ───────────────────────── -->
+      <section id="page-dashboard" class="section-shell">
+        <div class="page-header">
+          <div>
+            <h2>Загальний стан</h2>
+            <p>Ключові показники, баланс потоків та останні операції.</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-ghost" onclick="openIncomeModal()" style="font-size:0.78rem;">+ Дохід</button>
+            <button class="btn-ghost" onclick="openExpenseModal()" style="font-size:0.78rem;">+ Витрата</button>
           </div>
         </div>
-        <div>
-          <h3 class="font-brand text-xs font-semibold mb-2" style="color:var(--muted);">ВИТРАТИ</h3>
-          <div class="card p-0 overflow-hidden">
-            <table class="w-full text-xs">
-              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);" class="text-left">
-                <th class="px-3 py-2">Дата</th><th class="px-3 py-2">Категорія</th><th class="px-3 py-2 text-right">Сума</th>
-              </tr></thead>
-              <tbody id="rep-expenses-body"></tbody>
+
+        <div class="kpi-grid">
+          <article class="kpi kpi-primary">
+            <div class="kpi-label">Чистий прибуток</div>
+            <div class="kpi-value" id="stat-profit">—</div>
+            <div class="kpi-hint">Доходи мінус витрати</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-label">Загальні доходи</div>
+            <div class="kpi-value pos" id="stat-income">—</div>
+            <div class="kpi-hint">Усі надходження</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-label">Загальні витрати</div>
+            <div class="kpi-value neg" id="stat-expense">—</div>
+            <div class="kpi-hint">Усі списання</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-label">Структура потоку</div>
+            <div class="cashflow-wrap" style="margin-top:0.5rem;">
+              <div class="cashflow-track">
+                <div id="cashflowIncomeBar" class="cashflow-income" style="width:50%;"></div>
+              </div>
+              <div class="cashflow-caption">
+                <span id="cashflowIncomePct" style="color:var(--positive);">Доходи: 50%</span>
+                <span id="cashflowExpensePct" style="color:var(--negative);">Витрати: 50%</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="card-body" style="padding-bottom:0.75rem;">
+            <div class="flex justify-between items-center">
+              <div style="font-size:0.875rem;font-weight:600;">Останні операції</div>
+              <div style="font-size:0.72rem;color:var(--muted);">Останні 10 записів</div>
+            </div>
+          </div>
+          <div id="recentList">
+            <div class="empty-state"><div class="empty-icon">📭</div>Немає записів</div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ── INCOMES ─────────────────────────── -->
+      <section id="page-incomes" class="section-shell hidden">
+        <div class="page-header">
+          <div>
+            <h2>Доходи</h2>
+            <p>Надходження по клієнтах, договорах та джерелах.</p>
+          </div>
+          <button class="btn-primary" onclick="openIncomeModal()">+ Додати дохід</button>
+        </div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:480px;">
+          <article class="kpi">
+            <div class="kpi-label">Сума у відборі</div>
+            <div class="kpi-value pos" id="incomeTotalValue">—</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-label">Кількість записів</div>
+            <div class="kpi-value" id="incomeCountValue">0</div>
+          </article>
+        </div>
+
+        <article class="card card-body">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.875rem;">Фільтри</div>
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label>Від</label>
+              <input type="date" id="incomeFilterStart" />
+            </div>
+            <div class="filter-group">
+              <label>До</label>
+              <input type="date" id="incomeFilterEnd" />
+            </div>
+            <div class="filter-group" style="min-width:auto;">
+              <label>&nbsp;</label>
+              <div class="flex gap-2">
+                <button class="btn-primary" onclick="applyIncomeFilter()">Застосувати</button>
+                <button class="btn-ghost" onclick="resetIncomeFilter()">Скинути</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Джерело</th>
+                  <th>Опис</th>
+                  <th class="text-right">Сума</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="incomesBody">
+                <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📭</div>Немає доходів</div></td></tr>
+              </tbody>
             </table>
           </div>
+        </article>
+      </section>
+
+      <!-- ── EXPENSES ────────────────────────── -->
+      <section id="page-expenses" class="section-shell hidden">
+        <div class="page-header">
+          <div>
+            <h2>Витрати</h2>
+            <p>Контроль витрат по категоріях та датах.</p>
+          </div>
+          <button class="btn-primary" onclick="openExpenseModal()">+ Додати витрату</button>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- --- ПРОФІЛЬ --- -->
-  <section id="page-profile" class="fade-in hidden" style="max-width:480px;">
-    <h2 class="font-brand text-lg font-semibold mb-4">Профіль ФОП</h2>
-    <div class="card p-5 flex flex-col gap-4">
-      <div>
-        <label>ПІБ</label>
-        <input type="text" id="prof-fullName" placeholder="Іванов Іван Іванович" />
-      </div>
-      <div>
-        <label>Група ЄП</label>
-        <select id="prof-taxGroup">
-          <option value="1">1 група</option>
-          <option value="2">2 група</option>
-          <option value="3" selected>3 група</option>
-        </select>
-      </div>
-      <div>
-        <label>РНОКПП (ІПН)</label>
-        <input type="text" id="prof-regNumber" placeholder="1234567890" />
-      </div>
-      <button class="btn-primary" onclick="saveProfile()">Зберегти профіль</button>
-    </div>
-  </section>
+        <div class="kpi-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:480px;">
+          <article class="kpi">
+            <div class="kpi-label">Сума у відборі</div>
+            <div class="kpi-value neg" id="expenseTotalValue">—</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-label">Кількість записів</div>
+            <div class="kpi-value" id="expenseCountValue">0</div>
+          </article>
+        </div>
 
-</main>
+        <article class="card card-body">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.875rem;">Фільтри</div>
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label>Від</label>
+              <input type="date" id="expenseFilterStart" />
+            </div>
+            <div class="filter-group">
+              <label>До</label>
+              <input type="date" id="expenseFilterEnd" />
+            </div>
+            <div class="filter-group">
+              <label>Категорія</label>
+              <select id="expenseFilterCategory"><option value="">Всі категорії</option></select>
+            </div>
+            <div class="filter-group" style="min-width:auto;">
+              <label>&nbsp;</label>
+              <div class="flex gap-2">
+                <button class="btn-primary" onclick="applyExpenseFilter()">Застосувати</button>
+                <button class="btn-ghost" onclick="resetExpenseFilter()">Скинути</button>
+              </div>
+            </div>
+          </div>
+        </article>
 
-<!-- ===== МОДАЛІ ===== -->
+        <article class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Категорія</th>
+                  <th>Опис</th>
+                  <th class="text-right">Сума</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="expensesBody">
+                <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📭</div>Немає витрат</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
 
-<!-- Дохід -->
+      <!-- ── CATEGORIES ──────────────────────── -->
+      <section id="page-categories" class="section-shell hidden">
+        <div class="page-header">
+          <div>
+            <h2>Категорії витрат</h2>
+            <p>Структуруйте витрати для чіткої аналітики та звітів.</p>
+          </div>
+          <button class="btn-primary" onclick="openCategoryModal()">+ Категорія</button>
+        </div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:480px;">
+          <article class="kpi">
+            <div class="kpi-label">Всього категорій</div>
+            <div class="kpi-value" id="categoryCountValue">0</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-label">Зі списаннями</div>
+            <div class="kpi-value" id="categoriesUsedValue">0</div>
+          </article>
+        </div>
+
+        <div id="categoriesGrid" class="categories-grid">
+          <div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">🏷️</div>Немає категорій. Додайте першу!</div>
+        </div>
+      </section>
+
+      <!-- ── REPORTS ─────────────────────────── -->
+      <section id="page-reports" class="section-shell hidden">
+        <div class="page-header">
+          <div>
+            <h2>Звіти</h2>
+            <p>Формуйте результати за обраний період і експортуйте дані.</p>
+          </div>
+        </div>
+
+        <article class="card card-body" style="max-width:720px;">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:1rem;">Параметри звіту</div>
+          <div class="filter-bar" style="margin-bottom:1rem;">
+            <div class="filter-group">
+              <label>Початок</label>
+              <input type="date" id="reportStart" />
+            </div>
+            <div class="filter-group">
+              <label>Кінець</label>
+              <input type="date" id="reportEnd" />
+            </div>
+            <div class="filter-group" style="min-width:auto;">
+              <label>&nbsp;</label>
+              <button class="btn-primary" onclick="generateReport()">Сформувати</button>
+            </div>
+          </div>
+
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Швидкий вибір:</div>
+          <div class="flex gap-2" style="flex-wrap:wrap;margin-bottom:1.25rem;">
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="applyReportTemplate('week')">Цей тиждень</button>
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="applyReportTemplate('month')">Цей місяць</button>
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="applyReportTemplate('quarter')">Цей квартал</button>
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="applyReportTemplate('year')">Цей рік</button>
+          </div>
+
+          <div class="divider"></div>
+          <div style="font-size:0.72rem;color:var(--muted);margin:0.75rem 0 0.5rem;">Експорт даних:</div>
+          <div class="flex gap-2" style="flex-wrap:wrap;">
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="exportReport('json')">↗ JSON</button>
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="exportReport('xml')">↗ XML</button>
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="exportReport('csv')">↗ CSV</button>
+            <button class="btn-ghost" style="font-size:0.75rem;" onclick="exportReport('xlsx')">↗ XLSX</button>
+          </div>
+        </article>
+
+        <div id="reportResult" class="section-shell hidden">
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));max-width:720px;">
+            <article class="kpi">
+              <div class="kpi-label">Доходи</div>
+              <div class="kpi-value pos" id="rep-income">—</div>
+            </article>
+            <article class="kpi">
+              <div class="kpi-label">Витрати</div>
+              <div class="kpi-value neg" id="rep-expense">—</div>
+            </article>
+            <article class="kpi kpi-primary">
+              <div class="kpi-label">Прибуток</div>
+              <div class="kpi-value" id="rep-profit">—</div>
+            </article>
+          </div>
+
+          <div class="report-tables">
+            <article class="card">
+              <div class="card-body" style="padding-bottom:0.75rem;">
+                <div style="font-size:0.875rem;font-weight:600;">Доходи</div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Дата</th><th>Джерело</th><th class="text-right">Сума</th></tr></thead>
+                  <tbody id="rep-incomes-body"></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-body" style="padding-bottom:0.75rem;">
+                <div style="font-size:0.875rem;font-weight:600;">Витрати</div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Дата</th><th>Категорія</th><th class="text-right">Сума</th></tr></thead>
+                  <tbody id="rep-expenses-body"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PROFILE ─────────────────────────── -->
+      <section id="page-profile" class="section-shell hidden">
+        <div class="page-header">
+          <div>
+            <h2>Профіль ФОП</h2>
+            <p>Реквізити підприємця для звітів та ідентифікації.</p>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <article class="card card-body">
+            <div class="profile-section-title">Особисті дані</div>
+            <div class="flex flex-col gap-3">
+              <div class="form-row">
+                <label>ПІБ *</label>
+                <input type="text" id="prof-fullName" placeholder="Іванов Іван Іванович" />
+              </div>
+              <div class="form-row">
+                <label>РНОКПП (ІПН)</label>
+                <input type="text" id="prof-regNumber" placeholder="1234567890" maxlength="10" />
+                <div class="form-hint">10-значний реєстраційний номер платника податків</div>
+              </div>
+              <div class="form-row">
+                <label>Адреса реєстрації</label>
+                <input type="text" id="prof-address" placeholder="м. Київ, вул. Хрещатик, 1" />
+              </div>
+              <div class="form-row">
+                <label>Телефон</label>
+                <input type="tel" id="prof-phone" placeholder="+38 050 123 4567" />
+              </div>
+              <div class="form-row">
+                <label>Email</label>
+                <input type="email" id="prof-email" placeholder="info@example.com" />
+              </div>
+            </div>
+          </article>
+
+          <div class="flex flex-col gap-3">
+            <article class="card card-body">
+              <div class="profile-section-title">Податкові реквізити</div>
+              <div class="flex flex-col gap-3">
+                <div class="form-row">
+                  <label>Група єдиного податку *</label>
+                  <select id="prof-taxGroup">
+                    <option value="1">1 група — до 167 МЗП/рік, без ПДВ</option>
+                    <option value="2">2 група — до 834 МЗП/рік, без ПДВ</option>
+                    <option value="3" selected>3 група — до 1167 МЗП/рік</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>Вид діяльності (КВЕД)</label>
+                  <input type="text" id="prof-kved" placeholder="62.01 — Комп'ютерне програмування" />
+                </div>
+                <div class="form-row">
+                  <label>Платник ПДВ</label>
+                  <select id="prof-vat">
+                    <option value="false" selected>Не платник ПДВ</option>
+                    <option value="true">Платник ПДВ</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label>IBAN рахунку</label>
+                  <input type="text" id="prof-iban" placeholder="UA213996220000026007233566001" />
+                </div>
+              </div>
+            </article>
+
+            <article class="card card-body" style="background:rgba(62,207,142,0.04);border-color:rgba(62,207,142,0.2);">
+              <div style="font-size:0.8rem;font-weight:600;color:var(--accent);margin-bottom:0.5rem;">💡 Нагадування</div>
+              <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;margin:0;">
+                Звіт 3-го кварталу ЄП подається до <strong style="color:var(--text);">10 листопада</strong>.
+                ЄСВ сплачується щоквартально до 19-го числа наступного місяця.
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div>
+          <button class="btn-primary" onclick="saveProfile()">Зберегти профіль</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Income Modal -->
 <div id="incomeModal" class="modal-backdrop hidden">
-  <div class="modal card p-6 fade-in">
-    <h3 class="font-brand text-base font-semibold mb-4" id="incomeModalTitle">Новий дохід</h3>
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="incomeModalTitle">Новий дохід</h3>
+      <button class="modal-close" onclick="closeModal('incomeModal')">✕</button>
+    </div>
     <input type="hidden" id="income-id" />
-    <div class="flex flex-col gap-3">
-      <div><label>Дата *</label><input type="date" id="income-date" /></div>
-      <div><label>Джерело *</label><input type="text" id="income-source" placeholder="Назва клієнта або контракту" /></div>
-      <div><label>Сума (грн) *</label><input type="number" id="income-amount" min="0.01" step="0.01" /></div>
-      <div><label>Опис</label><input type="text" id="income-desc" placeholder="Необов'язково" /></div>
-      <div id="income-error" class="text-xs hidden" style="color:var(--danger);"></div>
-      <div class="flex gap-2 pt-2">
-        <button class="btn-primary flex-1" onclick="submitIncome()">Зберегти</button>
-        <button class="btn-ghost" onclick="closeModal('incomeModal')">Скасувати</button>
+    <div class="modal-body">
+      <div class="grid grid-2 gap-3">
+        <div class="form-row">
+          <label>Дата *</label>
+          <input type="date" id="income-date" />
+        </div>
+        <div class="form-row">
+          <label>Сума (грн) *</label>
+          <input type="number" id="income-amount" min="0.01" step="0.01" placeholder="0.00" />
+        </div>
       </div>
+      <div class="form-row">
+        <label>Джерело / Клієнт *</label>
+        <input type="text" id="income-source" placeholder="Назва клієнта або контракту" />
+      </div>
+      <div class="form-row">
+        <label>Опис</label>
+        <input type="text" id="income-desc" placeholder="Необов'язкова деталь" />
+      </div>
+      <div id="income-error" class="field-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary flex-1" onclick="submitIncome()">Зберегти</button>
+      <button class="btn-ghost" onclick="closeModal('incomeModal')">Скасувати</button>
     </div>
   </div>
 </div>
 
-<!-- Витрата -->
+<!-- Expense Modal -->
 <div id="expenseModal" class="modal-backdrop hidden">
-  <div class="modal card p-6 fade-in">
-    <h3 class="font-brand text-base font-semibold mb-4" id="expenseModalTitle">Нова витрата</h3>
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="expenseModalTitle">Нова витрата</h3>
+      <button class="modal-close" onclick="closeModal('expenseModal')">✕</button>
+    </div>
     <input type="hidden" id="expense-id" />
-    <div class="flex flex-col gap-3">
-      <div><label>Дата *</label><input type="date" id="expense-date" /></div>
-      <div>
+    <div class="modal-body">
+      <div class="grid grid-2 gap-3">
+        <div class="form-row">
+          <label>Дата *</label>
+          <input type="date" id="expense-date" />
+        </div>
+        <div class="form-row">
+          <label>Сума (грн) *</label>
+          <input type="number" id="expense-amount" min="0.01" step="0.01" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="form-row">
         <label>Категорія *</label>
         <select id="expense-category"></select>
       </div>
-      <div><label>Сума (грн) *</label><input type="number" id="expense-amount" min="0.01" step="0.01" /></div>
-      <div><label>Опис</label><input type="text" id="expense-desc" /></div>
-      <div id="expense-error" class="text-xs hidden" style="color:var(--danger);"></div>
-      <div class="flex gap-2 pt-2">
-        <button class="btn-primary flex-1" onclick="submitExpense()">Зберегти</button>
-        <button class="btn-ghost" onclick="closeModal('expenseModal')">Скасувати</button>
+      <div class="form-row">
+        <label>Опис</label>
+        <input type="text" id="expense-desc" placeholder="Необов'язкова деталь" />
       </div>
+      <div id="expense-error" class="field-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary flex-1" onclick="submitExpense()">Зберегти</button>
+      <button class="btn-ghost" onclick="closeModal('expenseModal')">Скасувати</button>
     </div>
   </div>
 </div>
 
-<!-- Категорія -->
+<!-- Category Modal -->
 <div id="categoryModal" class="modal-backdrop hidden">
-  <div class="modal card p-6 fade-in" style="width:380px;">
-    <h3 class="font-brand text-base font-semibold mb-4" id="categoryModalTitle">Нова категорія</h3>
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <h3 id="categoryModalTitle">Нова категорія</h3>
+      <button class="modal-close" onclick="closeModal('categoryModal')">✕</button>
+    </div>
     <input type="hidden" id="cat-id" />
-    <div class="flex flex-col gap-3">
-      <div><label>Назва *</label><input type="text" id="cat-name" /></div>
-      <div><label>Опис</label><input type="text" id="cat-desc" /></div>
-      <div id="cat-error" class="text-xs hidden" style="color:var(--danger);"></div>
-      <div class="flex gap-2 pt-2">
-        <button class="btn-primary flex-1" onclick="submitCategory()">Зберегти</button>
-        <button class="btn-ghost" onclick="closeModal('categoryModal')">Скасувати</button>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Назва *</label>
+        <input type="text" id="cat-name" placeholder="Наприклад: Реклама" />
       </div>
+      <div class="form-row">
+        <label>Опис</label>
+        <input type="text" id="cat-desc" placeholder="Короткий опис (необов'язково)" />
+      </div>
+      <div id="cat-error" class="field-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary flex-1" onclick="submitCategory()">Зберегти</button>
+      <button class="btn-ghost" onclick="closeModal('categoryModal')">Скасувати</button>
     </div>
   </div>
 </div>
 
-<!-- Toast-повідомлення -->
-<div id="toast" class="fixed bottom-5 right-5 px-4 py-3 rounded-xl text-sm font-medium opacity-0 transition-opacity duration-300 pointer-events-none z-50"
-     style="background:var(--surface); border:1px solid var(--border);"></div>
+<!-- Profile Creation Modal (Full) -->
+<div id="profileModal" class="modal-backdrop hidden">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h3>Новий профіль ФОП</h3>
+      <button class="modal-close" onclick="closeModal('profileModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Назва профілю *</label>
+        <input id="profile-name" type="text" placeholder="Наприклад: ФОП Іваненко 2025" />
+        <div class="form-hint">Використовується для перемикання між ФОП або роками</div>
+      </div>
+      <div class="form-row">
+        <label>ПІБ</label>
+        <input id="profile-fullName" type="text" placeholder="Іванов Іван Іванович" />
+      </div>
+      <div class="grid grid-2 gap-3">
+        <div class="form-row">
+          <label>РНОКПП (ІПН)</label>
+          <input id="profile-regNumber" type="text" placeholder="1234567890" maxlength="10" />
+        </div>
+        <div class="form-row">
+          <label>Група ЄП</label>
+          <select id="profile-taxGroup">
+            <option value="1">1 група</option>
+            <option value="2">2 група</option>
+            <option value="3" selected>3 група</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Вид діяльності (КВЕД)</label>
+        <input id="profile-kved" type="text" placeholder="62.01 — Комп'ютерне програмування" />
+      </div>
+      <div class="form-row">
+        <label>IBAN рахунку</label>
+        <input id="profile-iban" type="text" placeholder="UA213996220000026007233566001" />
+      </div>
+      <div id="profile-error" class="field-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary flex-1" onclick="submitProfile()">Створити профіль</button>
+      <button class="btn-ghost" onclick="closeModal('profileModal')">Скасувати</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal" class="modal-backdrop hidden">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>Підтвердження</h3>
+      <button class="modal-close" onclick="confirmDialogReject()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage" style="color:var(--muted);font-size:0.875rem;margin:0;"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger flex-1" onclick="confirmDialogAccept()">Видалити</button>
+      <button class="btn-ghost flex-1" onclick="confirmDialogReject()">Скасувати</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
 <script src="js/app.js"></script>
 </body>

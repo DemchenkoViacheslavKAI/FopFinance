@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using System.Xml.Linq;
 using System.Text.Json;
 
@@ -56,6 +58,55 @@ namespace FopFinance.Models
 
             return new XDocument(new XDeclaration("1.0", "utf-8", null), root)
                 .ToString();
+        }
+
+        /// <summary>Серіалізує звіт у CSV-рядок (UTF-8).</summary>
+        public string ExportToCSV()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Section,Date,Type,CategoryOrSource,Amount,Description");
+
+            foreach (var i in Incomes)
+            {
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    Csv("Income"),
+                    Csv(i.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                    Csv("Income"),
+                    Csv(i.Source),
+                    Csv(i.Amount.ToString(CultureInfo.InvariantCulture)),
+                    Csv(i.Description)
+                }));
+            }
+
+            foreach (var e in Expenses)
+            {
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    Csv("Expense"),
+                    Csv(e.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                    Csv("Expense"),
+                    Csv(e.CategoryName),
+                    Csv(e.Amount.ToString(CultureInfo.InvariantCulture)),
+                    Csv(e.Description)
+                }));
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"Summary,Period,{StartDate:yyyy-MM-dd}..{EndDate:yyyy-MM-dd},TotalIncome,{TotalIncome.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"Summary,Period,{StartDate:yyyy-MM-dd}..{EndDate:yyyy-MM-dd},TotalExpense,{TotalExpense.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"Summary,Period,{StartDate:yyyy-MM-dd}..{EndDate:yyyy-MM-dd},NetProfit,{NetProfit.ToString(CultureInfo.InvariantCulture)},");
+
+            return sb.ToString();
+        }
+
+        private static string Csv(string? value)
+        {
+            string safe = value ?? string.Empty;
+            if (safe.Contains('"')) safe = safe.Replace("\"", "\"\"");
+            if (safe.Contains(',') || safe.Contains('\n') || safe.Contains('\r'))
+                return $"\"{safe}\"";
+            return safe;
         }
 
         // --- Допоміжні методи для XML ---

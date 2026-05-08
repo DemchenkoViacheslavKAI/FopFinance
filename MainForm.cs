@@ -18,6 +18,7 @@ namespace FopFinance
         private WebView2? _webView;
         private FinanceManager _manager;
         private BridgeService  _bridge;
+        private readonly Timer _autoSaveTimer;
 
         public MainForm()
         {
@@ -34,6 +35,12 @@ namespace FopFinance
             // Менеджер і міст
             _manager = new FinanceManager();
             _bridge  = new BridgeService(_manager, this);
+
+            _autoSaveTimer = new Timer { Interval = 60_000 };
+            _autoSaveTimer.Tick += (_, _) => _bridge.SaveAutoBackup();
+            _autoSaveTimer.Start();
+
+            FormClosing += (_, _) => _bridge.SaveAutoBackup();
 
             // Ініціалізація WebView2
             InitWebView();

@@ -16,6 +16,8 @@
   <ItemGroup>
     <!-- WebView2 — вбудований браузер Chromium для WinForms -->
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2365.46" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
   </ItemGroup>
 
   <!-- Копіюємо wwwroot у вихідну папку при збірці -->
@@ -23,6 +25,11 @@
     <Content Include="wwwroot\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="FopFinance.Tests\**\*.cs" />
+    <None Include="FopFinance.Tests\**\*" />
   </ItemGroup>
 
 </Project>
