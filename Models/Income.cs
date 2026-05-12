@@ -21,19 +21,5 @@ namespace FopFinance.Models
         {
             return Math.Round(Amount * taxRatePercent / 100m, 2);
         }
-
-        /// <summary>
-        /// Розширена валідація: перевіряє базові поля + джерело.
-        /// </summary>
-        public override string Validate()
-        {
-            string baseError = base.Validate();
-            if (!string.IsNullOrEmpty(baseError)) return baseError;
-
-            if (string.IsNullOrWhiteSpace(Source))
-                return "Джерело доходу є обов'язковим полем.";
-
-            return string.Empty;
-        }
     }
 }

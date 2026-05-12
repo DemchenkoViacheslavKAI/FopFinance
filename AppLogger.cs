@@ -8,49 +8,27 @@ namespace FopFinance
     {
         private static readonly object _sync = new();
 
-        public static string LogFilePath
-        {
-            get
-            {
-                string dir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "FopFinance",
-                    "logs");
-
-                Directory.CreateDirectory(dir);
-                return Path.Combine(dir, $"app_{DateTime.Now:yyyyMMdd}.log");
-            }
-        }
+        private static string LogFilePath =>
+            Path.Combine(AppPaths.LogDir, $"app_{DateTime.Now:yyyyMMdd}.log");
 
         public static void Info(string message) => Write("INFO", message);
 
         public static void Error(string message, Exception? ex = null)
         {
-            if (ex == null)
-            {
-                Write("ERROR", message);
-                return;
-            }
-
-            Write("ERROR", $"{message} | {ex.GetType().Name}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+            string detail = ex == null
+                ? message
+                : $"{message} | {ex.GetType().Name}: {ex.Message}{Environment.NewLine}{ex.StackTrace}";
+            Write("ERROR", detail);
         }
 
         private static void Write(string level, string message)
         {
             string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] {message}";
-
             lock (_sync)
             {
-                try
-                {
-                    File.AppendAllText(LogFilePath, line + Environment.NewLine);
-                }
-                catch
-                {
-                    // Avoid crashing app because of logging issues.
-                }
+                try { File.AppendAllText(LogFilePath, line + Environment.NewLine); }
+                catch { /* Never crash the app due to a logging failure. */ }
             }
-
             Debug.WriteLine(line);
         }
     }

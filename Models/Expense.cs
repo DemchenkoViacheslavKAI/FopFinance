@@ -44,17 +44,5 @@ namespace FopFinance.Models
             CategoryId = category.Id;
             CategoryName = category.Name;
         }
-
-        /// <summary>Розширена валідація: перевіряє наявність категорії.</summary>
-        public override string Validate()
-        {
-            string baseError = base.Validate();
-            if (!string.IsNullOrEmpty(baseError)) return baseError;
-
-            if (string.IsNullOrWhiteSpace(CategoryId))
-                return "Витрата повинна мати категорію.";
-
-            return string.Empty;
-        }
     }
 }

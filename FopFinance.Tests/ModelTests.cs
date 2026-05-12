@@ -3,21 +3,21 @@
 //
 //  Чек-лист №1 — Бізнес-логіка (FinancialRecord, Income, Expense, Category)
 //  ──────────────────────────────────────────────────────────────────────
-//  BL-01  FinancialRecord.Validate() — сума = 0 → помилка
-//  BL-02  FinancialRecord.Validate() — від'ємна сума → помилка
-//  BL-03  FinancialRecord.Validate() — дата за замовчуванням → помилка
-//  BL-04  FinancialRecord.Validate() — майбутня дата → помилка
-//  BL-05  FinancialRecord.Validate() — коректні дані → порожній рядок
+//  BL-01  FinancialRecordValidator.Validate() — сума = 0 → помилка
+//  BL-02  FinancialRecordValidator.Validate() — від'ємна сума → помилка
+//  BL-03  FinancialRecordValidator.Validate() — дата за замовчуванням → помилка
+//  BL-04  FinancialRecordValidator.Validate() — майбутня дата → помилка
+//  BL-05  FinancialRecordValidator.Validate() — коректні дані → порожній рядок
 //  BL-06  FinancialRecord.GetAmount() — повертає Amount
-//  BL-07  Income.Validate() — порожнє Source → помилка
-//  BL-08  Income.Validate() — пробільне Source → помилка
-//  BL-09  Income.Validate() — коректні дані → порожній рядок
+//  BL-07  IncomeValidator.Validate() — порожнє Source → помилка
+//  BL-08  IncomeValidator.Validate() — пробільне Source → помилка
+//  BL-09  IncomeValidator.Validate() — коректні дані → порожній рядок
 //  BL-10  Income.CalculateTax() — 5% за замовчуванням
 //  BL-11  Income.CalculateTax() — 3% для 1-ї групи
 //  BL-12  Income.CalculateTax() — 0% → нуль
 //  BL-13  Income.CalculateTax() — округлення до 2 знаків
-//  BL-14  Expense.Validate() — порожній CategoryId → помилка
-//  BL-15  Expense.Validate() — коректні дані → порожній рядок
+//  BL-14  ExpenseValidator.Validate() — порожній CategoryId → помилка
+//  BL-15  ExpenseValidator.Validate() — коректні дані → порожній рядок
 //  BL-16  Expense.AssignCategory() — встановлює Id та Name
 //  BL-17  Expense.AssignCategory() — null → ArgumentNullException
 //  BL-18  Category.Edit() — оновлює Name та Description
@@ -28,13 +28,14 @@
 using System;
 using System.Collections.Generic;
 using FopFinance.Models;
+using FopFinance.Validators;
 using Xunit;
 
 namespace FopFinance.Tests;
 
 /// <summary>
 /// Тест-кейс BL-A: Валідація базового запису (FinancialRecord).
-/// Перевіряє всі гілки методу Validate() — позитивні та негативні сценарії.
+/// Перевіряє всі гілки базової валідації — позитивні та негативні сценарії.
 /// </summary>
 public class FinancialRecordValidationTests
 {
@@ -48,7 +49,7 @@ public class FinancialRecordValidationTests
     public void Validate_ZeroAmount_ReturnsError()
     {
         var income = new Income { Date = DateTime.Today, Amount = 0, Source = "X" };
-        var result = income.Validate();
+        var result = FinancialRecordValidator.Validate(income);
         Assert.Equal("Сума повинна бути більшою за нуль.", result);
     }
 
@@ -57,7 +58,7 @@ public class FinancialRecordValidationTests
     public void Validate_NegativeAmount_ReturnsError()
     {
         var income = new Income { Date = DateTime.Today, Amount = -100m, Source = "X" };
-        var result = income.Validate();
+        var result = FinancialRecordValidator.Validate(income);
         Assert.Equal("Сума повинна бути більшою за нуль.", result);
     }
 
@@ -66,7 +67,7 @@ public class FinancialRecordValidationTests
     public void Validate_DefaultDate_ReturnsError()
     {
         var income = new Income { Date = default, Amount = 500m, Source = "X" };
-        var result = income.Validate();
+        var result = FinancialRecordValidator.Validate(income);
         Assert.Equal("Дата не може бути порожньою.", result);
     }
 
@@ -80,7 +81,7 @@ public class FinancialRecordValidationTests
             Amount = 500m,
             Source = "X"
         };
-        var result = income.Validate();
+        var result = FinancialRecordValidator.Validate(income);
         Assert.Equal("Дата не може бути в майбутньому.", result);
     }
 
@@ -89,7 +90,7 @@ public class FinancialRecordValidationTests
     public void Validate_ValidData_ReturnsEmpty()
     {
         var income = ValidIncome();
-        var result = income.Validate();
+        var result = FinancialRecordValidator.Validate(income);
         Assert.Equal(string.Empty, result);
     }
 
@@ -111,7 +112,7 @@ public class FinancialRecordValidationTests
             Amount = 1m,
             Source = "X"
         };
-        Assert.NotEmpty(income.Validate());
+        Assert.NotEmpty(FinancialRecordValidator.Validate(income));
     }
 }
 
@@ -126,7 +127,7 @@ public class IncomeBusinessRulesTests
     public void Validate_EmptySource_ReturnsError()
     {
         var income = new Income { Date = DateTime.Today, Amount = 100m, Source = "" };
-        var result = income.Validate();
+        var result = IncomeValidator.Validate(income);
         Assert.Equal("Джерело доходу є обов'язковим полем.", result);
     }
 
@@ -135,7 +136,7 @@ public class IncomeBusinessRulesTests
     public void Validate_WhitespaceSource_ReturnsError()
     {
         var income = new Income { Date = DateTime.Today, Amount = 100m, Source = "   " };
-        var result = income.Validate();
+        var result = IncomeValidator.Validate(income);
         Assert.Equal("Джерело доходу є обов'язковим полем.", result);
     }
 
@@ -144,7 +145,7 @@ public class IncomeBusinessRulesTests
     public void Validate_ValidIncome_ReturnsEmpty()
     {
         var income = new Income { Date = DateTime.Today, Amount = 1000m, Source = "АТ Ромашка" };
-        Assert.Equal(string.Empty, income.Validate());
+        Assert.Equal(string.Empty, IncomeValidator.Validate(income));
     }
 
     // ── BL-10: Податок 5% за замовчуванням ───────────────────────────
@@ -215,7 +216,7 @@ public class ExpenseAndCategoryTests
             Amount     = 100m,
             CategoryId = ""
         };
-        var result = expense.Validate();
+        var result = ExpenseValidator.Validate(expense);
         Assert.Equal("Витрата повинна мати категорію.", result);
     }
 
@@ -229,7 +230,7 @@ public class ExpenseAndCategoryTests
             Amount     = 500m,
             CategoryId = Guid.NewGuid().ToString()
         };
-        Assert.Equal(string.Empty, expense.Validate());
+        Assert.Equal(string.Empty, ExpenseValidator.Validate(expense));
     }
 
     // ── BL-16: AssignCategory встановлює Id та Name ───────────────────
